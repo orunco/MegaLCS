@@ -22,7 +22,7 @@ using Silk.NET.OpenCL;
 
 namespace MegaLCSLib.OpenCL;
 
-public partial class MegaLCS{
+public partial class Mega{
     // 使用 Lazy<T> 进行延迟初始化
     private static readonly Lazy<CL> lazyCL = new Lazy<CL>(() => {
         try{
@@ -426,8 +426,8 @@ public partial class MegaLCS{
         int _step,
         bool isDebug){
         var code = IsSharedVersion
-            ? MegaLCS.NanoLCS_GotoRightBottom_Kernel_Shared
-            : MegaLCS.NanoLCS_GotoRightBottom_Kernel_Register;
+            ? Mega.NanoLCS_GotoRightBottom_Kernel_Shared
+            : Mega.NanoLCS_GotoRightBottom_Kernel_Register;
 
         var program = cl.CreateProgramWithSource(
             context,
@@ -678,13 +678,14 @@ public partial class MegaLCS{
 
         return originalValues.Length / step;
     }
-
+ 
     // 遍历所有平台设备，返回必要的结果
     public static unsafe List<(
         IntPtr platformId,
         IntPtr deviceId,
-        string name)> GetAllDevices(){
-        var result = new List<(IntPtr platformId, IntPtr deviceId, string name)>();
+        string name,
+        DeviceType deviceType)> GetAllDevices(){
+        var result = new List<(IntPtr platformId, IntPtr deviceId, string name, DeviceType type)>();
 
         // 查询设备的3个信息：
         // opencl版本
@@ -766,7 +767,16 @@ public partial class MegaLCS{
                     deviceName.Slice(0, length));
                 // Console.WriteLine($"  设备 {d}: {deviceNameString}");
 
-                result.Add((platformId, deviceId, deviceNameString));
+                // 获取设备类型
+                DeviceType deviceType = 0;
+                cl.GetDeviceInfo(
+                    deviceId,
+                    DeviceInfo.Type,
+                    (nuint)sizeof(DeviceType),
+                    &deviceType,
+                    Span<UIntPtr>.Empty);
+
+                result.Add((platformId, deviceId, deviceNameString, (DeviceType)deviceType));
             }
         }
 

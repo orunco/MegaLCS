@@ -7,7 +7,7 @@ namespace MegaLCSTest.OpenCL;
 // ReSharper disable UselessBinaryOperation
 // ReSharper disable TooWideLocalVariableScope
 // 内核函数调试非常困难，用这个代码先做一下仿真验证
-public class Mega_Kernel_Nano_Register_Simulate{
+public class Tool_Mega_Kernel_Nano_Register_Simulate{
     // bases可以看成是展开到Y轴; latest可以看成是展开到X轴;
     // hors存储原DP的横向权重，类似滚动数组；【是输入也是输出】
     // vers存储原DP的纵向权重，【是输入也是输出】

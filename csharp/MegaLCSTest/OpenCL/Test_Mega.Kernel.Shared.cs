@@ -131,7 +131,7 @@ public class Mega_Kernel_Shared_Test{
         int step,
         bool isDebug = false){
         var allDevices =
-            MegaLCSLib.OpenCL.MegaLCS.GetAllDevices();
+            MegaLCSLib.OpenCL.Mega.GetAllDevices();
 
         foreach (var device in allDevices){
             if (isDebug){
@@ -144,7 +144,7 @@ public class Mega_Kernel_Shared_Test{
             var versOut = (int[])verWeights.Clone();
             var horsOut = (int[])horWeights.Clone();
 
-            MegaLCSLib.OpenCL.MegaLCS.KernelLCS(
+            MegaLCSLib.OpenCL.Mega.KernelLCS(
                 device.platformId,
                 device.deviceId,
                 baseVals,

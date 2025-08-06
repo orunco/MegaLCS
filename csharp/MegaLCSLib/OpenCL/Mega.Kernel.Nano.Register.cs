@@ -1,6 +1,7 @@
 ﻿namespace MegaLCSLib.OpenCL;
 
-public partial class MegaLCS{
+// 实际测试，这个核函数性能不太行
+public partial class Mega{
 
     // __STEP__ MUST = 2,4,8,16
     private const string NanoLCS_GotoRightBottom_Kernel_Register = @"

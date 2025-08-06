@@ -1,6 +1,6 @@
 ﻿namespace MegaLCSLib.OpenCL;
 
-public partial class MegaLCS{
+public partial class Mega{
 
     // __STEP__ MUST = [1->256]
     private const string NanoLCS_GotoRightBottom_Kernel_Shared = @"
