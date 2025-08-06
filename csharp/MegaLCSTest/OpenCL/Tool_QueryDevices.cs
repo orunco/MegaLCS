@@ -3,7 +3,8 @@
 using Silk.NET.OpenCL;
 using System;
 
-class Tool_Query_Devices{
+class Tool_QueryDevices{
+    
     public static unsafe void QueryAll(){
         // 初始化OpenCL
         var cl = CL.GetApi();
@@ -48,7 +49,7 @@ class Tool_Query_Devices{
                 Span<byte> deviceName = new byte[1024];
                 cl.GetDeviceInfo(deviceId, DeviceInfo.Name, (nuint)deviceName.Length, deviceName, Span<UIntPtr>.Empty);
 
-// 找到第一个空字符的位置
+                // 找到第一个空字符的位置
                 int length = 0;
                 while (length < deviceName.Length && deviceName[length] != 0){
                     length++;

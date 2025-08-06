@@ -3,7 +3,7 @@
 public partial class Mega{
 
     // __STEP__ MUST = [1->256]
-    private const string NanoLCS_GotoRightBottom_Kernel_Shared = @"
+    private const string KernelLCS_Shared = @"
 /*
 Copyright (C) 2025 Pete Zhang, rivxer@gmail.com, https://github.com/orunco
 
@@ -20,7 +20,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-__kernel void NanoLCS_GotoRightBottom_Kernel(
+__kernel void KernelLCS_GotoRightBottom(
     __global int *gBases,
     __global int *gLatests,
     __global int *gVerWeights,
@@ -130,13 +130,15 @@ __kernel void NanoLCS_GotoRightBottom_Kernel(
     /*
     下面这段代码是平行世界，需要带入每一个线程的视角去考虑，而且线程的展开类似Hi算法，是一个迅速展开的过程
     绝不是一个平凡的过程
-    先是outerW的展开，然后是innerWLine的线程展开，画图吧，否则难以理解
+    先是outerW的展开，然后是innerWaveFrontLine的线程展开，画图吧，否则难以理解
     也许是因为共享内存被加载到了寄存器，又因为全部并行化了，所以性能提升很快
     */
-    for (int innerWLine = 0; innerWLine < 2 * __STEP__ - 1; innerWLine++) {
+    for (int innerWaveFrontLine = 0; 
+             innerWaveFrontLine < 2 * __STEP__ - 1; 
+             innerWaveFrontLine++) {
         // 每个wavefront对应一条反斜对角线,每个线程根据 wavefrontID 计算自己的坐标 (l,b)         
         int l = threadIdx;        // X轴坐标（latest索引）
-        int b = innerWLine - l;       // Y轴坐标（base索引）
+        int b = innerWaveFrontLine - l;       // Y轴坐标（base索引）
 
         // 线程激活逻辑: 仅允许对角线上的有效坐标参与计算，通过下列条件自动过滤无效坐标，无需硬编码。
         if (b >= 0 && b < __STEP__ && l >= 0 && l < __STEP__) {
@@ -147,7 +149,7 @@ __kernel void NanoLCS_GotoRightBottom_Kernel(
             // 特殊点：当b=0，使用基础权重
             int topWeight = hors[l];
 
-            // 计算对角值的三种边界情况
+            // 计算对角值的三种边界情况【推导可知】
             int leftTopWeight = min(leftWeight, topWeight);
 
             // 每个hors/vers只会被一个线程更新，不会出现竞争条件
@@ -178,7 +180,7 @@ __kernel void NanoLCS_GotoRightBottom_Kernel(
 #endif
         // 等待当前wavefront的所有线程完成计算
         barrier(CLK_LOCAL_MEM_FENCE);
-    } // end for innerWLine
+    } // end for innerWaveFrontLine
 
     // 等待所有线程完成计算
     barrier(CLK_LOCAL_MEM_FENCE);

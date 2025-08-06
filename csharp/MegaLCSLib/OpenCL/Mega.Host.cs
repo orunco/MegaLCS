@@ -36,8 +36,8 @@ public partial class Mega{
 
     private static CL cl => lazyCL.Value;
 
-    // 运行Kernel LCS, 输入的Array必须是STEP的倍数, KernelLCS调用NanoLCS
-    public static unsafe void KernelLCS(
+    // 运行HostLCS, 输入的Array必须是STEP的倍数, HostLCS调用KernelLCS
+    public static unsafe void HostLCS_WaveFront(
         IntPtr platformId,
         IntPtr deviceId,
         int[] baseVals,
@@ -111,7 +111,7 @@ public partial class Mega{
         // Create OpenCL kernel
         kernel = cl.CreateKernel(
             program,
-            "NanoLCS_GotoRightBottom_Kernel",
+            "KernelLCS_GotoRightBottom",
             null);
         if (kernel == IntPtr.Zero){
             Console.WriteLine("Failed to create kernel");
@@ -164,9 +164,9 @@ public partial class Mega{
         var totalWave = _baseSliceSize + _latestSliceSize - 1;
         // wavefront算法类似波，沿着对角带的方向前进，这里为什么命名为Band? 如果STEP>=2,则一次W覆盖了宽度为2
         // 的条带，只有核函数内部才是对角线
-        for (var outerWBand = 0;
-             outerWBand < totalWave;
-             outerWBand++){
+        for (var outerWaveFrontBand = 0;
+             outerWaveFrontBand < totalWave;
+             outerWaveFrontBand++){
             // if (100 * waveFrontID / totalWF % 10 == 0){
             //     Console.WriteLine($"{waveFrontID}/{totalWF}");
             // }
@@ -176,10 +176,10 @@ public partial class Mega{
             var localWorkSize_ThreadPerBlock = new nuint[]{ (nuint)threadPerBlock };
 
             // latest是X轴/水平方向，sliceID最小值: 逆方向，随着wavefront的逐渐减少，有可能小于0; 且同一波前处理的切片满足 baseSliceID + latestSliceID = waveFrontID
-            var latestSliceIDMin = Math.Max(0, outerWBand - (_baseSliceSize - 1));
+            var latestSliceIDMin = Math.Max(0, outerWaveFrontBand - (_baseSliceSize - 1));
 
             // latest方向的sliceID的最大值：随着wavefrontID逐渐增加，有可能超过LATEST_SLICE_SIZE，所以取小值
-            var latestSliceIDMax = Math.Min(outerWBand, _latestSliceSize - 1);
+            var latestSliceIDMax = Math.Min(outerWaveFrontBand, _latestSliceSize - 1);
 
             // 其次：对于当前的wavefront，总共有多少个block? 也就是对角线的小方块数量
             // 这个算法是推导出来的，不需要用if翻越中线的方法，非常巧妙
@@ -192,12 +192,12 @@ public partial class Mega{
 
             if (isDebug){
                 Console.WriteLine(
-                    $"\n【Start new kernel】\nouterW={outerWBand} blocks={totalBlockInWaveFront}■              totalThread={totalThread} latestSliceID={latestSliceIDMin}->{latestSliceIDMax} step={step} (in host)");
+                    $"\n【Start new kernel】\nouterW={outerWaveFrontBand} blocks={totalBlockInWaveFront}■              totalThread={totalThread} latestSliceID={latestSliceIDMin}->{latestSliceIDMax} step={step} (in host)");
             }
 
 
             // 每一次参数是有差异的 
-            ret = cl.SetKernelArg(kernel, 6, (nuint)sizeof(int), &outerWBand);
+            ret = cl.SetKernelArg(kernel, 6, (nuint)sizeof(int), &outerWaveFrontBand);
             ret |= cl.SetKernelArg(kernel, 7, (nuint)sizeof(int), &totalThread);
 
             if (ret != (int)ErrorCodes.Success){
@@ -426,8 +426,8 @@ public partial class Mega{
         int _step,
         bool isDebug){
         var code = IsSharedVersion
-            ? Mega.NanoLCS_GotoRightBottom_Kernel_Shared
-            : Mega.NanoLCS_GotoRightBottom_Kernel_Register;
+            ? Mega.KernelLCS_Shared
+            : Mega.KernelLCS_Register;
 
         var program = cl.CreateProgramWithSource(
             context,
@@ -677,109 +677,5 @@ public partial class Mega{
         }
 
         return originalValues.Length / step;
-    }
- 
-    // 遍历所有平台设备，返回必要的结果
-    public static unsafe List<(
-        IntPtr platformId,
-        IntPtr deviceId,
-        string name,
-        DeviceType deviceType)> GetAllDevices(){
-        var result = new List<(IntPtr platformId, IntPtr deviceId, string name, DeviceType type)>();
-
-        // 查询设备的3个信息：
-        // opencl版本
-        //     每个thread的寄存器数量上限
-        // 每个wrap的thread数量（调度单位）
-        // 每个grid最多支持多少个block？
-        // 可以自适应，不要超过上限
-        // OpenCL C version 1.2 does not support the 'register' storage class specifier 
-
-        // 获取平台数量
-        uint platformCount = 0;
-        cl.GetPlatformIDs(
-            0,
-            null,
-            &platformCount);
-
-        if (platformCount == 0){
-            // Console.WriteLine("未找到任何OpenCL平台。");
-            return result;
-        }
-
-        // 获取平台ID
-        Span<nint> platformIds = new nint[(int)platformCount];
-        cl.GetPlatformIDs(
-            platformCount,
-            platformIds,
-            Span<uint>.Empty);
-
-        // 遍历每个平台
-        for (var p = 0; p < platformCount; p++){
-            var platformId = platformIds[p];
-
-            // 获取设备数量
-            uint deviceCount = 0;
-            cl.GetDeviceIDs(
-                platformId,
-                DeviceType.All,
-                0,
-                null,
-                &deviceCount);
-
-            if (deviceCount == 0){
-                // Console.WriteLine($"平台 {p} 上没有找到任何设备。");
-                continue;
-            }
-
-            // 获取设备ID
-            Span<nint> deviceIds = new nint[(int)deviceCount];
-            cl.GetDeviceIDs(
-                platformId,
-                DeviceType.All,
-                deviceCount,
-                deviceIds,
-                Span<uint>.Empty);
-
-            // Console.WriteLine($"平台 {p} 上有 {deviceCount} 个设备。");
-
-            // 遍历每个设备
-            for (var d = 0; d < deviceCount; d++){
-                var deviceId = deviceIds[d];
-
-                // 获取设备名称
-                Span<byte> deviceName = new byte[1024];
-                cl.GetDeviceInfo(
-                    deviceId,
-                    DeviceInfo.Name,
-                    (nuint)deviceName.Length,
-                    deviceName,
-                    Span<UIntPtr>.Empty);
-
-                // 找到第一个空字符的位置
-                var length = 0;
-                while (length < deviceName.Length && deviceName[length] != 0){
-                    length++;
-                }
-
-                // 截取有效部分并转换为字符串
-                var deviceNameString = System.Text.Encoding.UTF8.GetString(
-                    deviceName.Slice(0, length));
-                // Console.WriteLine($"  设备 {d}: {deviceNameString}");
-
-                // 获取设备类型
-                DeviceType deviceType = 0;
-                cl.GetDeviceInfo(
-                    deviceId,
-                    DeviceInfo.Type,
-                    (nuint)sizeof(DeviceType),
-                    &deviceType,
-                    Span<UIntPtr>.Empty);
-
-                result.Add((platformId, deviceId, deviceNameString, (DeviceType)deviceType));
-            }
-        }
-
-        return result;
     }
 }

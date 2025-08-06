@@ -2,7 +2,7 @@
 
 namespace MegaLCSTest.OpenCL;
 
-public class Mega_Kernel_Shared_Test{
+public class Test_HostLCSShared{
     [Test]
     public void Test_classic(){
         // STEP = 1 原始经典值
@@ -13,7 +13,7 @@ public class Mega_Kernel_Shared_Test{
             int[] inputHorW = new int[latests.Length];
             int[] expectVers =[1, 2, 3, 3, 3, 3, 4];
             int[] expectHors =[1, 2, 2, 3, 4, 4];
-            Test_KernelLCS_Shared(bases, latests,
+            Test_HostLCS_Shared(bases, latests,
                 inputVerW, inputHorW,
                 expectVers, expectHors, 1, true);
         }
@@ -26,7 +26,7 @@ public class Mega_Kernel_Shared_Test{
             int[] inputHorW = new int[latests.Length];
             int[] expectVers =[1, 2, 3, 3, 3, 3];
             int[] expectHors =[1, 2, 2, 3, 3, 3];
-            Test_KernelLCS_Shared(bases, latests,
+            Test_HostLCS_Shared(bases, latests,
                 inputVerW, inputHorW,
                 expectVers, expectHors, 1, true);
         }
@@ -39,7 +39,7 @@ public class Mega_Kernel_Shared_Test{
             int[] inputHorW = new int[latests.Length];
             int[] expectVers =[1, 2, 3, 3, 3, 3];
             int[] expectHors =[1, 2, 2, 3, 3, 3];
-            Test_KernelLCS_Shared(bases, latests,
+            Test_HostLCS_Shared(bases, latests,
                 inputVerW, inputHorW,
                 expectVers, expectHors, 1, true);
         }
@@ -52,7 +52,7 @@ public class Mega_Kernel_Shared_Test{
             int[] inputHorW = new int[latests.Length];
             int[] expectVers =[1, 2, 3, 3, 3, 3];
             int[] expectHors =[1, 2, 2, 3, 3, 3];
-            Test_KernelLCS_Shared(bases, latests,
+            Test_HostLCS_Shared(bases, latests,
                 inputVerW, inputHorW,
                 expectVers, expectHors, 1, true);
         }
@@ -61,49 +61,49 @@ public class Mega_Kernel_Shared_Test{
     [Test]
     public void Test_RegularArray1x1(){
         // 无基础权重的测试用例
-        Test_KernelLCS_Shared([5], [5], [0], [0],
+        Test_HostLCS_Shared([5], [5], [0], [0],
             [1], [1], 1);
-        Test_KernelLCS_Shared([5], [6], [0], [0],
+        Test_HostLCS_Shared([5], [6], [0], [0],
             [0], [0], 1);
 
         // 有基础权重的测试用例
-        Test_KernelLCS_Shared([5], [5], [10], [10],
+        Test_HostLCS_Shared([5], [5], [10], [10],
             [11], [11], 1);
-        Test_KernelLCS_Shared([5], [6], [10], [10],
+        Test_HostLCS_Shared([5], [6], [10], [10],
             [10], [10], 1);
     }
 
     [Test]
     public void Test_RegularArray2x2_step1(){
         // 无基础权重的测试用例
-        Test_KernelLCS_Shared([5, 6], [5, 6], [0, 0], [0, 0],
+        Test_HostLCS_Shared([5, 6], [5, 6], [0, 0], [0, 0],
             [1, 2], [1, 2], 1);
-        Test_KernelLCS_Shared([5, 6], [7, 8], [0, 0], [0, 0],
+        Test_HostLCS_Shared([5, 6], [7, 8], [0, 0], [0, 0],
             [0, 0], [0, 0], 1);
 
         // 有基础权重的测试用例
-        Test_KernelLCS_Shared([5, 6], [5, 6], [10, 20], [30, 40],
+        Test_HostLCS_Shared([5, 6], [5, 6], [10, 20], [30, 40],
             [40, 21], [20, 21], 1);
-        Test_KernelLCS_Shared([5, 6], [7, 8], [10, 20], [30, 40],
+        Test_HostLCS_Shared([5, 6], [7, 8], [10, 20], [30, 40],
             [40, 40], [30, 40], 1);
     }
 
     [Test]
     public void Test_Other(){
         // 这个测试用例的基础权重值虽然很奇葩，但是可以很清晰的解释核函数内部发生的流程，因为权重不符合实际，所以结果和正确的权重也有差异
-        Test_KernelLCS_Shared([5, 6, 5], [5, 6]
+        Test_HostLCS_Shared([5, 6, 5], [5, 6]
             , [30, 40, 50], [10, 20]
             , [20, 21, 41], [41, 41], 1, true);
         
-        Test_KernelLCS_Shared([5, 6], [5, 6]
+        Test_HostLCS_Shared([5, 6], [5, 6]
             , [30, 40], [10, 20]
             , [20, 21], [40, 21], 1, true);
         // 下面这个测试是可以通过的，结果是正确的
-        Test_KernelLCS_Shared([5, 6], [5, 6]
+        Test_HostLCS_Shared([5, 6], [5, 6]
             , [11, 12], [10, 11]
             , [11, 12], [12, 12], 1, true);
 
-        Test_KernelLCS_Shared([5, 6, 7, 8], [5, 6, 7, 8]
+        Test_HostLCS_Shared([5, 6, 7, 8], [5, 6, 7, 8]
             , [11, 12, 13, 14], [10, 11, 12, 13]
             , [13, 13, 13, 14], [14, 14, 14, 14], 2, true);
 
@@ -115,13 +115,13 @@ public class Mega_Kernel_Shared_Test{
             expectArray[i] = i + 1;
         }
 
-        Test_KernelLCS_Shared(inputArray, inputArray,
+        Test_HostLCS_Shared(inputArray, inputArray,
             inputArray, inputArray,
             expectArray, expectArray,
             256, false);
     }
 
-    private static void Test_KernelLCS_Shared(
+    private static void Test_HostLCS_Shared(
         int[] baseVals,
         int[] latestVals,
         int[] verWeights,
@@ -144,7 +144,7 @@ public class Mega_Kernel_Shared_Test{
             var versOut = (int[])verWeights.Clone();
             var horsOut = (int[])horWeights.Clone();
 
-            MegaLCSLib.OpenCL.Mega.KernelLCS(
+            MegaLCSLib.OpenCL.Mega.HostLCS_WaveFront(
                 device.platformId,
                 device.deviceId,
                 baseVals,

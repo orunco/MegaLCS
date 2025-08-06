@@ -77,6 +77,29 @@ IterationCount=3  LaunchCount=3  WarmupCount=3
 
 真实的100万大概10秒，200万36秒（理论应该是40秒），400万142秒（理论应该是160秒）
 
+400万数据比对时，GPU显存占用大小：
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 575.64.03              Driver Version: 575.64.03      CUDA Version: 12.9     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  Tesla P40                      Off |   00000000:07:00.0 Off |                  Off |
+| N/A   51C    P0            128W /  250W |     328MiB /  24576MiB |    100%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A            1510      G   /usr/lib/xorg/Xorg                        4MiB |
+|    0   N/A  N/A            3082      G   /usr/lib/xorg/Xorg                      110MiB |
+|    0   N/A  N/A           18124      C   dotnet                                  210MiB |
++-----------------------------------------------------------------------------------------+
+
  */
 
 [SimpleJob(RuntimeMoniker.Net80, baseline: true,
@@ -84,7 +107,7 @@ IterationCount=3  LaunchCount=3  WarmupCount=3
 [SimpleJob(RuntimeMoniker.NativeAot80,
     launchCount: 3, warmupCount: 3, iterationCount: 3)]
 [MemoryDiagnoser]
-public class Perf_Opencl{
+public class Perf_HostLCSShared{
     int[] inputArray;
     int[] expectArray;
 
@@ -108,13 +131,13 @@ public class Perf_Opencl{
     [Test]
     [Benchmark]
     public void perf_diff_main_all_same_0(){
-        Test_KernelLCS_Shared(inputArray, inputArray,
+        Test_HostLCS_Shared(inputArray, inputArray,
             inputArray, inputArray,
             expectArray, expectArray,
             STEP);
     }
 
-    private static void Test_KernelLCS_Shared(
+    private static void Test_HostLCS_Shared(
         int[] baseVals,
         int[] latestVals,
         int[] verWeights,
@@ -135,7 +158,7 @@ public class Perf_Opencl{
             var versOut = (int[])verWeights.Clone();
             var horsOut = (int[])horWeights.Clone();
 
-            MegaLCSLib.OpenCL.Mega.KernelLCS(
+            MegaLCSLib.OpenCL.Mega.HostLCS_WaveFront(
                 device.platformId,
                 device.deviceId,
                 baseVals,

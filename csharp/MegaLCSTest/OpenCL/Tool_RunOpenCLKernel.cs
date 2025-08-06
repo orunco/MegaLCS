@@ -6,7 +6,7 @@ using Silk.NET.OpenCL;
 
 namespace MegaLCSTest.OpenCL;
 
-class Tool_Run_OpenCL_Kernel{
+class Tool_RunOpenCLKernel{
     private const int N = 32;
     private const int Max = 1048576 / N;
     private const int ITERATIONS = 3;

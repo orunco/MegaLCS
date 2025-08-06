@@ -1,10 +1,10 @@
 ﻿namespace MegaLCSLib.OpenCL;
 
-// 实际测试，这个核函数性能不太行
+// 实际测试，这个【GPU寄存器】版本的核函数性能不太行
 public partial class Mega{
 
     // __STEP__ MUST = 2,4,8,16
-    private const string NanoLCS_GotoRightBottom_Kernel_Register = @"
+    private const string KernelLCS_Register = @"
 /*
 Copyright (C) 2025 Pete Zhang, rivxer@gmail.com, https://github.com/orunco
 
@@ -21,7 +21,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-__kernel void NanoLCS_GotoRightBottom_Kernel(
+__kernel void KernelLCS_GotoRightBottom(
     __global int *gBases,
     __global int *gLatests,
     __global int *gVerWeights,
