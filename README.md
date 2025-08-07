@@ -1,6 +1,6 @@
 # MegaLCS
 
-**An ultra-fast, fully parallel, memory-controlled, and time-controllable (depending largely on input array size and GPU capability) general-purpose LCS (Longest Common Subsequence) algorithm that runs on a single GPU. It is 100% covered by comprehensive unit tests and supports arrays with up to one million elements each.**
+**A LCS (Longest Common Subsequence) algorithm that supports arrays with up to one million elements, is ultra-fast, features controllable time and memory usage, and runs on GPU.**
 
 Keywords: [Longest Common Subsequence | LCS] [CUDA/OpenCL/Parallel]
 
