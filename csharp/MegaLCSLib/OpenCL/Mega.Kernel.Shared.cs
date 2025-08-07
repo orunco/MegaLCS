@@ -20,7 +20,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-__kernel void KernelLCS_NoDependency(
+__kernel void KernelLCS_DataIndependent(
     __global int *gBases,
     __global int *gLatests,
     __global int *gVerWeights,

@@ -1,12 +1,12 @@
 # MegaLCS
 
-**An OpenCL-compatible(GPU) LCS(Longest Common Subsequence) algorithm supporting arrays with up to MILLION elements on a single GPU, ULTRA-FAST performance, and controllable time and memory usage.**
+**An OpenCL-compatible(GPU) LCS(Longest Common Subsequence) parallel algorithm supporting MILLION elements on a single GPU, ULTRA-FAST performance, and controllable time and memory usage.**
 
 Keywords: Longest Common Subsequence, LCS, CUDA, OpenCL, Parallel Computing
 
 ---
 
-For example, based on execution results from a Tesla P40 environment, comparing two integer arrays of length 1 million takes approximately **only 9.5 seconds**.
+For example, based on execution results from a Tesla P40 environment, comparing **two integer arrays of length 1 million** takes approximately **only 9.5 seconds**.
 
 ```
 | Runtime       | MAX     | STEP | Mean         | Allocated   |
@@ -32,7 +32,45 @@ My goal was to solve this real-world problem with a simple and practical impleme
 
 **int leftTopWeight = Math.Min(leftWeight, topWeight);**
 
-A prototype implementation can be found in `CpuLCS_NoDependency()`. For broader compatibility (e.g., if you have a powerful CPU and OpenCL support), the actual implementation uses OpenCL, with the kernel function named `KernelLCS_NoDependency`. Converting it to CUDA would also be straightforward.
+A prototype implementation can be found in `CpuLCS_DataIndependent()`. For broader compatibility (e.g., if you have a powerful CPU and OpenCL support), the actual implementation uses OpenCL, with the kernel function named `KernelLCS_NoDependency`. Converting it to CUDA would also be straightforward.
+
+
+### Proof
+In the dynamic programming (DP) weight matrix of LCS, for the cell `dp[i][j]`, the value at its top-left corner `lefttop` (i.e., `dp[i-1][j-1]`) indeed equals the minimum of the left value `left` (`dp[i][j-1]`) and the top value `top` (`dp[i-1][j]`). Below is the proof process:
+
+##### 1. Proof Steps
+
+1. **Non-decreasing Property of the DP Table**  
+   In the DP table for LCS, the value of each cell satisfies the non-decreasing property: when moving right or down, the value does not decrease. That is:
+   - `dp[i][j] ≥ dp[i-1][j]` (value does not decrease when moving down)
+   - `dp[i][j] ≥ dp[i][j-1]` (value does not decrease when moving right)
+
+2. **Analysis of the Recurrence Relation**  
+   - If the current characters match (`X[i] == Y[j]`), then `dp[i][j] = dp[i-1][j-1] + 1`.
+   - If the characters do not match, then `dp[i][j] = max(dp[i-1][j], dp[i][j-1])`.  
+   From this, it follows that, regardless of whether the characters match, the value of `dp[i][j]` is always no less than the value of its top-left cell `dp[i-1][j-1]`.
+
+3. **Deriving the Relationship Between `lefttop`, `left`, and `top`**  
+   - Due to the non-decreasing property, the left cell `dp[i][j-1] ≥ dp[i-1][j-1]`.
+   - Similarly, the top cell `dp[i-1][j] ≥ dp[i-1][j-1]`.  
+   Therefore, `min(dp[i][j-1], dp[i-1][j]) ≥ dp[i-1][j-1]`.
+
+4. **Proof by Contradiction**  
+   Assume there exists some `i,j` such that `min(dp[i][j-1], dp[i-1][j}) > dp[i-1][j-1}`. This implies that both `dp[i][j-1]` and `dp[i-1][j]` are strictly greater than `dp[i-1][j-1}`. However, according to the recurrence rules:
+   - The value of `dp[i][j-1]` comes from `max(dp[i-1][j-1}, dp[i][j-2})` or, in the case of a match, `dp[i-1][j-2}+1`. In any case, `dp[i][j-1]` is at least equal to `dp[i-1][j-1}`.
+   - Similarly, the value of `dp[i-1][j]` is also at least equal to `dp[i-1][j-1}`.  
+   If both are strictly greater than `dp[i-1][j-1}`, it contradicts the non-decreasing property of the DP table, as `dp[i-1][j-1]` should have been updated to a larger value during the recurrence process.
+
+5. **Inductive Summary**  
+   Through mathematical induction and concrete examples, it can be confirmed that in the DP table for LCS, `lefttop` always equals the minimum of `left` and `top`. This property is guaranteed by the non-decreasing nature of the DP table and the recurrence rules.
+
+##### 2. Conclusion
+
+For the DP weight matrix of the LCS algorithm, the top-left value `lefttop` of cell `dp[i][j]` satisfies:  
+**lefttop = min(left, top)**  
+where `left` is the left value (`dp[i][j-1]`) and `top` is the top value (`dp[i-1][j]`). This conclusion is rigorously proven by the non-decreasing property of the DP table and the recurrence rules, and its correctness is verified through examples.
+
+
 
 ## Getting Started
 
