@@ -2,7 +2,7 @@
 
 **An OpenCL-compatible(GPU) LCS(Longest Common Subsequence) algorithm supporting arrays with up to MILLION elements on a single GPU, ULTRA-FAST performance, and controllable time and memory usage.**
 
-Keywords: [Longest Common Subsequence | LCS] [CUDA/OpenCL/Parallel]
+Keywords: Longest Common Subsequence, LCS, CUDA, OpenCL, Parallel Computing
 
 ---
 
@@ -26,7 +26,7 @@ For example, based on execution results from a Tesla P40 environment, comparing 
 
 Although the Longest Common Subsequence problem has been extensively studied, most classic algorithms have a time complexity of O(n²). While various optimized variants exist, such as Myers', they often come with assumptions or constraints that do not hold in real-world applications involving extremely large arrays. In such cases, only the basic LCS algorithm can be applied. However, computing LCS for arrays of length 1 million on CPU is practically infeasible — GPU acceleration becomes essential.
 
-There are many research efforts in this area, but existing implementations tend to be complex, and more importantly, most related papers lack publicly available source code :(. 
+There has been extensive research in this area, but existing implementations tend to be complex, and more importantly, most related papers lack publicly available source code :(. 
 
 My goal was to solve this real-world problem with a simple and practical implementation. After repeated derivation, I discovered (perhaps reinvented) and implemented a concise, and fully parallel solution. The key insight lies in computing `LeftTopWeight` without any data dependencies:
 
@@ -55,8 +55,8 @@ That’s all.
 The project currently uses C# as the primary development language for ease of development and debugging.
 
 - .NET 8+
-- Silk.NET.OpenCL 2.22.0
-- Maybe One Powerful GPU device
+- Silk.NET.OpenCL 2.22.0 (MIT LICENSE)
+- A powerful  OpenCL-compatible(GPU) device
 
 ## TODO
 
@@ -66,4 +66,5 @@ The project currently uses C# as the primary development language for ease of de
 ## License
 
 Copyright (C) 2025 Pete Zhang, rivxer@gmail.com
+
 Licensed under the Apache License, Version 2.0 (the "License");
