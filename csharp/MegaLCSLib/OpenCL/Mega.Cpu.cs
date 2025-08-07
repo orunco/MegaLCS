@@ -26,11 +26,11 @@ public partial class Mega{
     bases可以看成是展开到Y轴; latest可以看成是展开到X轴;
     vers存储原DP的纵向权重，【是输入也是输出】
     hors存储原DP的横向权重，类似滚动数组；【是输入也是输出】
-    这个函数的hors和vers是有基础权重的,不一定为0，且horWeights[0]可以和verWeights[0]不相等，因此Flex表达了这个意义
+    这个函数的hors和vers是有基础权重的,不一定为0，且horWeights[0]可以和verWeights[0]不相等，因此NoDependency表达了这个意义
     当hosrs和vers为0时退化到经典LCS
      */
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void CpuLCS_Flex(
+    public static void CpuLCS_NoDependency(
         int[] baseVals, int[] latestVals,
         int[] verWeights, int[] horWeights){
         // 先做校验，这个是由理论分析后的结果，必须满足

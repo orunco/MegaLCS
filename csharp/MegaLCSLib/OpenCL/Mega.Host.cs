@@ -111,7 +111,7 @@ public partial class Mega{
         // Create OpenCL kernel
         kernel = cl.CreateKernel(
             program,
-            "KernelLCS_GotoRightBottom",
+            "KernelLCS_NoDependency",
             null);
         if (kernel == IntPtr.Zero){
             Console.WriteLine("Failed to create kernel");

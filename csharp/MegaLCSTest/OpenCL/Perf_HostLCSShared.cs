@@ -152,7 +152,7 @@ public class Perf_HostLCSShared{
                 continue; // 跳过当前设备，继续下一个
             }
 
-            // Console.WriteLine($"Run on device : {device.name}");
+            Console.WriteLine($"Run on device : {device.name}");
 
             // 由于这个函数会直接修改权重数组，而测试是多设备反复的
             var versOut = (int[])verWeights.Clone();

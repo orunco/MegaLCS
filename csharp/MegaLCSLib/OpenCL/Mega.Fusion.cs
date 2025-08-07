@@ -81,7 +81,7 @@ public partial class Mega{
         // 如果任意一个序列长度小于等于step，直接使用CPU版本
         if (baseVals.Length <= step ||
             latestVals.Length <= step){
-            CpuLCS_Flex(baseVals, latestVals,
+            CpuLCS_NoDependency(baseVals, latestVals,
                 verWeights, horWeights);
             return (true, verWeights, horWeights);
         }
@@ -89,7 +89,7 @@ public partial class Mega{
         // 如果没有找到GPU设备，则全部使用CPU处理
         if (platformId == IntPtr.Zero ||
             deviceId == IntPtr.Zero){
-            CpuLCS_Flex(baseVals, latestVals,
+            CpuLCS_NoDependency(baseVals, latestVals,
                 verWeights, horWeights);
             return (true, verWeights, horWeights);
         }
@@ -166,7 +166,7 @@ public partial class Mega{
                 horRTWeights, 0,
                 horRTWeights.Length);
 
-            CpuLCS_Flex(baseRTVals, latestRTVals,
+            CpuLCS_NoDependency(baseRTVals, latestRTVals,
                 verRTWeights, horRTWeights);
 
             // 回填权重
@@ -202,7 +202,7 @@ public partial class Mega{
                 horLBWeights, 0,
                 horLBWeights.Length);
 
-            CpuLCS_Flex(baseLBVals, latestLBVals,
+            CpuLCS_NoDependency(baseLBVals, latestLBVals,
                 verLBWeights, horLBWeights);
 
             // 更新权重
@@ -237,7 +237,7 @@ public partial class Mega{
                 horRBWeights, 0,
                 horRBWeights.Length);
 
-            CpuLCS_Flex(baseRBVals, latestRBVals,
+            CpuLCS_NoDependency(baseRBVals, latestRBVals,
                 verRBWeights, horRBWeights);
 
             // 回填权重
