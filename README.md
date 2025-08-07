@@ -20,8 +20,7 @@ For example, based on execution results from a Tesla P40 environment, comparing 
 | NativeAOT 8.0 | 4194304 | 256  | 142,976.1 ms | 34851.51 KB |
 ```
 
-<img src="D:\Work\Code\1_exchideas.github.com\Orunco-MegaLCS\Preview-device.png" alt="Preview-device" style="zoom:67%;" />
-
+![Preview](./Preview-device.png)
 
 ## Why?
 
