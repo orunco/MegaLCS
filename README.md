@@ -1,8 +1,8 @@
 # MegaLCS
 
-**An OpenCL LCS(Longest Common Subsequence) parallel algorithm (~150 lines) supporting MILLION elements on a single GPU, ULTRA-FAST performance, and controllable time and memory usage.**
+**An OpenCL LCS(Longest Common Subsequence) parallel MinMax algorithm (~150 lines) supporting MILLION elements on a single GPU, ULTRA-FAST performance, and controllable time and memory usage.**
 
-Keywords: Longest Common Subsequence, LCS, CUDA, OpenCL, Parallel Computing
+Keywords: Longest Common Subsequence, LCS, CUDA, OpenCL, Parallel Computing, MinMax
 
 ---
 
