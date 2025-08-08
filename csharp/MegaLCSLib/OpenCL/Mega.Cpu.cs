@@ -57,7 +57,7 @@ public partial class Mega{
         if (latestVals.Length != horWeights.Length){
             throw new Exception("CpuLCS(): latestVals数组长度与horWeights数组长度不匹配");
         }
-        
+
         for (var b = 0; b < baseVals.Length; b++){
             for (var l = 0; l < latestVals.Length; l++){
                 // 左值：当l>0时使用本行前一个值，l=0时使用纵向基础权重
@@ -94,7 +94,7 @@ public partial class Mega{
     因为内核很难调试，所以这个函数可以进行仿真验证
     和上面函数的差别在于horWeights[0]可以和verWeights[0]必须相等
     这个约束条件太麻烦了
-    
+
     注意：虽然有约束条件，但是也比一维滚动数组的内存占用要小一点点
      */
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -175,11 +175,11 @@ public partial class Mega{
         // Console.WriteLine("vers: " + string.Join(", ", verWeights));
     }
 
-    // 小白入门经典版本
-    public static int ClassicLCS_DPMatrix(int[] baseVals, int[] latestVals){
-        if (baseVals.Length == 0 ||
-            latestVals.Length == 0)
-            return 0;
+    // 小白入门经典版本，同时用于单元测试
+    public static (int[] verWeights, int[] horWeights) CpuLCS_DPMatrix(
+        int[] baseVals, int[] latestVals){
+        if (baseVals.Length == 0 || latestVals.Length == 0)
+            return (new int[0], new int[0]);
 
         var m = baseVals.Length;
         var n = latestVals.Length;
@@ -194,6 +194,18 @@ public partial class Mega{
             }
         }
 
-        return dp[m, n];
+        // 提取最后一行的权重（除了守卫）
+        var horWeights = new int[n];
+        for (var j = 0; j < n; j++){
+            horWeights[j] = dp[m, j + 1];
+        }
+
+        // 提取最后一列的权重（除了守卫）
+        var verWeights = new int[m];
+        for (var i = 0; i < m; i++){
+            verWeights[i] = dp[i + 1, n];
+        }
+
+        return (verWeights, horWeights);
     }
 }

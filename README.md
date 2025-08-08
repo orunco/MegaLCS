@@ -24,11 +24,11 @@ For example, based on execution results from a Tesla P40 environment, comparing 
 
 ## Why?
 
-Although the Longest Common Subsequence problem has been extensively studied, most classic algorithms have a time complexity of O(n²). While various optimized variants exist, such as Myers, they often come with assumptions or constraints that limit their ability to handle large-scale modifications. In such cases, only the basic LCS algorithm can be applied. However, computing LCS for arrays of length 1 million on CPU is practically infeasible — GPU acceleration becomes essential.
+Although the Longest Common Subsequence problem has been extensively studied, most classic algorithms have a time complexity of O(n²). While various optimized variants exist, such as Myers(The Myers algorithm is very good, but it has a small drawback: it cannot be parallelized.), they often come with assumptions or constraints that limit their ability to handle large-scale modifications. In such cases, only the basic LCS algorithm can be applied. However, computing LCS for arrays of length 1 million on CPU is practically infeasible — GPU acceleration becomes essential.
 
 There has been extensive research in this area, but existing implementations tend to be complex, and more importantly, most related papers lack publicly available source code :(. 
 
-My goal was to solve this real-world problem with a simple and practical implementation. After repeated derivation, I discovered (perhaps reinvented) and implemented a concise, and fully parallel solution. The key insight lies in computing `LeftTopWeight` without any data dependencies:
+My goal was to solve this real-world problem with a simple and practical implementation. After repeated derivations, I discovered (perhaps reinvented) and implemented a concise and fully parallel solution. The key insight lies in computing `LeftTopWeight` with data-independent operations:
 
 **int leftTopWeight = Math.Min(leftWeight, topWeight);**
 
@@ -94,12 +94,12 @@ The project currently uses C# as the primary development language for ease of de
 
 - .NET 8+
 - Silk.NET.OpenCL 2.22.0 (MIT LICENSE)
-- A powerful  OpenCL-compatible(GPU) device
+- A powerful  OpenCL-compatible(GPU or Powerful CPU) device
 
 ## TODO
 
 - Consider a C++ implementation in the future for better portability.
-- Currently, only the length of the LCS is computed. Backtracking to retrieve one or more actual common subsequences is not yet implemented. Given that weights are already calculated, implementing backtracking should be feasible and may be added in the future.
+- Currently, only the length of the LCS is computed. Backtracking to retrieve one or more actual common subsequences is not yet implemented. Given that weights are already calculated, implementing backtracking should be feasible and may be added in the future. Theoretical derivation result: Memory and time are approximately twice the current results.
 
 ## License
 

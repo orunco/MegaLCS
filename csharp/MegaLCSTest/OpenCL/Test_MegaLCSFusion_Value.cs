@@ -53,8 +53,8 @@ public class Test_MegaLCSFusion_Value{
             }
 
             // 使用经典LCS验证
-            var classicResult = Mega.ClassicLCS_DPMatrix(baseVals, latestVals);
-            Console.WriteLine($"Classic: {baseLen} vs {latestLen} => LCS Result: {classicResult}");
+            var classicResult = Mega.CpuLCS_DPMatrix(baseVals, latestVals);
+            Console.WriteLine($"Classic: {baseLen} vs {latestLen} => LCS Result: {classicResult.horWeights[^1]}");
 
             // 测试目标函数
             var (platformId, deviceId) = Mega.GetFirstGpuDevice();
@@ -63,8 +63,8 @@ public class Test_MegaLCSFusion_Value{
                 baseVals, latestVals,
                 2);
             Assert.That(processByCpu, Is.False);
-            Assert.That(verWeights[^1], Is.EqualTo(classicResult));
-            Assert.That(horWeights[^1], Is.EqualTo(classicResult));
+            Assert.That(verWeights, Is.EqualTo(classicResult.verWeights));
+            Assert.That(horWeights, Is.EqualTo(classicResult.horWeights));
         }
     }
 }
