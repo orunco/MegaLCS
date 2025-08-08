@@ -30,7 +30,7 @@ public partial class Mega{
     当hosrs和vers为0时退化到经典LCS
      */
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void CpuLCS_DataIndependent(
+    public static void CpuLCS_MinMax(
         int[] baseVals, int[] latestVals,
         int[] verWeights, int[] horWeights){
         // 先做校验，这个是由理论分析后的结果，必须满足

@@ -21,7 +21,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-__kernel void KernelLCS_GotoRightBottom(
+__kernel void KernelLCS_RollLeftTop(
     __global int *gBases,
     __global int *gLatests,
     __global int *gVerWeights,

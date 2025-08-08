@@ -6,19 +6,19 @@ namespace MegaLCSTest.OpenCL;
 // ReSharper disable UselessBinaryOperation
 // ReSharper disable TooWideLocalVariableScope
 
-public class Test_CpuLCSDataIndependent{
+public class Test_CpuLCSMinMax{
     [Test]
     public void test_ex(){
-        Assert.Throws<Exception>(() => { Mega.CpuLCS_DataIndependent([], [], [], []); });
-        Assert.Throws<Exception>(() => { Mega.CpuLCS_DataIndependent([5], [5], [5], []); });
-        Assert.Throws<Exception>(() => { Mega.CpuLCS_DataIndependent([5], [5], [], [5]); });
-        Assert.Throws<Exception>(() => { Mega.CpuLCS_DataIndependent([5], [], [5], [5]); });
-        Assert.Throws<Exception>(() => { Mega.CpuLCS_DataIndependent([], [5], [5], [5]); });
+        Assert.Throws<Exception>(() => { Mega.CpuLCS_MinMax([], [], [], []); });
+        Assert.Throws<Exception>(() => { Mega.CpuLCS_MinMax([5], [5], [5], []); });
+        Assert.Throws<Exception>(() => { Mega.CpuLCS_MinMax([5], [5], [], [5]); });
+        Assert.Throws<Exception>(() => { Mega.CpuLCS_MinMax([5], [], [5], [5]); });
+        Assert.Throws<Exception>(() => { Mega.CpuLCS_MinMax([], [5], [5], [5]); });
 
         // ==
         // Assert.Throws<Exception>(() => { Mega.CpuLCS_RollLeftTop([5], [5], [5], [6]); });
-        Assert.Throws<Exception>(() => { Mega.CpuLCS_DataIndependent([5, 6], [5], [5], [5, 6]); });
-        Assert.Throws<Exception>(() => { Mega.CpuLCS_DataIndependent([5], [5, 6], [5, 6], [5]); });
+        Assert.Throws<Exception>(() => { Mega.CpuLCS_MinMax([5, 6], [5], [5], [5, 6]); });
+        Assert.Throws<Exception>(() => { Mega.CpuLCS_MinMax([5], [5, 6], [5, 6], [5]); });
     }
 
     [Test]
@@ -27,7 +27,7 @@ public class Test_CpuLCSDataIndependent{
         {
             int[] verWeights =[0];
             int[] horWeights =[0];
-            Mega.CpuLCS_DataIndependent([5], [6], verWeights, horWeights);
+            Mega.CpuLCS_MinMax([5], [6], verWeights, horWeights);
             Assert.That(verWeights, Is.EqualTo(new[]{ 0 }));
             Assert.That(horWeights, Is.EqualTo(new[]{ 0 }));
         }
@@ -35,7 +35,7 @@ public class Test_CpuLCSDataIndependent{
         {
             int[] verWeights =[0];
             int[] horWeights =[0];
-            Mega.CpuLCS_DataIndependent([5], [5], verWeights, horWeights);
+            Mega.CpuLCS_MinMax([5], [5], verWeights, horWeights);
             Assert.That(verWeights, Is.EqualTo(new[]{ 1 }));
             Assert.That(horWeights, Is.EqualTo(new[]{ 1 }));
         }
@@ -44,7 +44,7 @@ public class Test_CpuLCSDataIndependent{
         {
             int[] verWeights =[10];
             int[] horWeights =[10];
-            Mega.CpuLCS_DataIndependent([5], [6], verWeights, horWeights);
+            Mega.CpuLCS_MinMax([5], [6], verWeights, horWeights);
             Assert.That(verWeights, Is.EqualTo(new[]{ 10 }));
             Assert.That(horWeights, Is.EqualTo(new[]{ 10 }));
         }
@@ -52,7 +52,7 @@ public class Test_CpuLCSDataIndependent{
         {
             int[] verWeights =[10];
             int[] horWeights =[10];
-            Mega.CpuLCS_DataIndependent([5], [5], verWeights, horWeights);
+            Mega.CpuLCS_MinMax([5], [5], verWeights, horWeights);
             Assert.That(verWeights, Is.EqualTo(new[]{ 11 }));
             Assert.That(horWeights, Is.EqualTo(new[]{ 11 }));
         }
@@ -64,7 +64,7 @@ public class Test_CpuLCSDataIndependent{
         {
             int[] verWeights =[0, 0];
             int[] horWeights =[0, 0];
-            Mega.CpuLCS_DataIndependent([5, 6], [5, 6], verWeights, horWeights);
+            Mega.CpuLCS_MinMax([5, 6], [5, 6], verWeights, horWeights);
             Assert.That(verWeights, Is.EqualTo(new[]{ 1, 2 }));
             Assert.That(horWeights, Is.EqualTo(new[]{ 1, 2 }));
         }
@@ -72,7 +72,7 @@ public class Test_CpuLCSDataIndependent{
         {
             int[] verWeights =[0, 0];
             int[] horWeights =[0, 0];
-            Mega.CpuLCS_DataIndependent([5, 6], [7, 8], verWeights, horWeights);
+            Mega.CpuLCS_MinMax([5, 6], [7, 8], verWeights, horWeights);
             Assert.That(verWeights, Is.EqualTo(new[]{ 0, 0 }));
             Assert.That(horWeights, Is.EqualTo(new[]{ 0, 0 }));
         }
@@ -81,7 +81,7 @@ public class Test_CpuLCSDataIndependent{
         {
             int[] verWeights =[10, 11];
             int[] horWeights =[10, 12];
-            Mega.CpuLCS_DataIndependent([5, 6], [5, 6], verWeights, horWeights);
+            Mega.CpuLCS_MinMax([5, 6], [5, 6], verWeights, horWeights);
             Assert.That(verWeights, Is.EqualTo(new[]{ 12, 12 }));
             Assert.That(horWeights, Is.EqualTo(new[]{ 11, 12 }));
         }
@@ -89,7 +89,7 @@ public class Test_CpuLCSDataIndependent{
         {
             int[] verWeights =[10, 11];
             int[] horWeights =[10, 12];
-            Mega.CpuLCS_DataIndependent([5, 6], [7, 8], verWeights, horWeights);
+            Mega.CpuLCS_MinMax([5, 6], [7, 8], verWeights, horWeights);
             Assert.That(verWeights, Is.EqualTo(new[]{ 12, 12 }));
             Assert.That(horWeights, Is.EqualTo(new[]{ 11, 12 }));
         }
@@ -101,7 +101,7 @@ public class Test_CpuLCSDataIndependent{
         {
             int[] verWeights =[10, 11, 12];
             int[] horWeights =[10, 11];
-            Mega.CpuLCS_DataIndependent([5, 6, 7], [5, 6], verWeights, horWeights);
+            Mega.CpuLCS_MinMax([5, 6, 7], [5, 6], verWeights, horWeights);
             Assert.That(verWeights, Is.EqualTo(new[]{ 11, 12, 12 }));
             Assert.That(horWeights, Is.EqualTo(new[]{ 12, 12 }));
         }
@@ -109,7 +109,7 @@ public class Test_CpuLCSDataIndependent{
         {
             int[] verWeights =[10, 11];
             int[] horWeights =[10, 11, 12];
-            Mega.CpuLCS_DataIndependent([5, 6], [5, 6, 7], verWeights, horWeights);
+            Mega.CpuLCS_MinMax([5, 6], [5, 6, 7], verWeights, horWeights);
             Assert.That(verWeights, Is.EqualTo(new[]{ 12, 12 }));
             Assert.That(horWeights, Is.EqualTo(new[]{ 11, 12, 12 }));
         }

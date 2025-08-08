@@ -1,6 +1,6 @@
 # MegaLCS
 
-**An OpenCL-compatible(GPU) LCS(Longest Common Subsequence) parallel algorithm supporting MILLION elements on a single GPU, ULTRA-FAST performance, and controllable time and memory usage.**
+**An OpenCL LCS(Longest Common Subsequence) parallel algorithm (~150 lines) supporting MILLION elements on a single GPU, ULTRA-FAST performance, and controllable time and memory usage.**
 
 Keywords: Longest Common Subsequence, LCS, CUDA, OpenCL, Parallel Computing
 
@@ -24,7 +24,7 @@ For example, based on execution results from a Tesla P40 environment, comparing 
 
 ## Why?
 
-Although the Longest Common Subsequence problem has been extensively studied, most classic algorithms have a time complexity of O(n²). While various optimized variants exist, such as Myers', they often come with assumptions or constraints that do not hold in real-world applications involving extremely large arrays. In such cases, only the basic LCS algorithm can be applied. However, computing LCS for arrays of length 1 million on CPU is practically infeasible — GPU acceleration becomes essential.
+Although the Longest Common Subsequence problem has been extensively studied, most classic algorithms have a time complexity of O(n²). While various optimized variants exist, such as Myers, they often come with assumptions or constraints that limit their ability to handle large-scale modifications. In such cases, only the basic LCS algorithm can be applied. However, computing LCS for arrays of length 1 million on CPU is practically infeasible — GPU acceleration becomes essential.
 
 There has been extensive research in this area, but existing implementations tend to be complex, and more importantly, most related papers lack publicly available source code :(. 
 
@@ -32,10 +32,10 @@ My goal was to solve this real-world problem with a simple and practical impleme
 
 **int leftTopWeight = Math.Min(leftWeight, topWeight);**
 
-A prototype implementation can be found in `CpuLCS_DataIndependent()`. For broader compatibility (e.g., if you have a powerful CPU and OpenCL support), the actual implementation uses OpenCL, with the kernel function named `KernelLCS_NoDependency`. Converting it to CUDA would also be straightforward.
-
+A prototype implementation can be found in `CpuLCS_MinMax()`. For broader compatibility (e.g., if you have a powerful CPU and OpenCL support), the actual implementation uses OpenCL, with the kernel function named `KernelLCS_MinMax` (**the actual code is less than 100 lines**), and the host function named `HostLCS_WaveFront` (**core code is less than 50 lines**). Converting it to CUDA would also be straightforward.
 
 ### Proof
+
 In the dynamic programming (DP) weight matrix of LCS, for the cell `dp[i][j]`, the value at its top-left corner `lefttop` (i.e., `dp[i-1][j-1]`) indeed equals the minimum of the left value `left` (`dp[i][j-1]`) and the top value `top` (`dp[i-1][j]`). Below is the proof process:
 
 ##### 1. Proof Steps
