@@ -20,7 +20,7 @@ namespace MegaLCSLib.OpenCL;
 
 public partial class Mega{
     // 最终用户使用的版本
-    public static int MegaLCS(int[] baseVals, int[] latestVals){
+    public static int MegaLCSLen(int[] baseVals, int[] latestVals){
         // 使用默认最佳值
         const int step = 256;
 

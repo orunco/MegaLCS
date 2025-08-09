@@ -74,6 +74,22 @@ where `left` is the left value (`dp[i][j-1]`) and `top` is the top value (`dp[i-
 
 ## Getting Started
 
+### cpp
+```bash
+git clone https://github.com/orunco/MegaLCS.git
+cd cpp\MegaLCSTest
+cmake and run
+```
+
+Alternatively, you can import it into your own project and directly use the function interface:
+
+```csharp
+Mega::MegaLCSLen(const vector<int>& baseVals, const vector<int>& latestVals)
+```
+
+
+### csharp
+
 ```bash
 git clone https://github.com/orunco/MegaLCS.git
 cd csharp\MegaLCSTest
@@ -83,10 +99,12 @@ dotnet run -c Release
 Alternatively, you can import it into your own project and directly use the function interface:
 
 ```csharp
-Mega.MegaLCS(int[] baseVals, int[] latestVals)
+Mega.MegaLCSLen(int[] baseVals, int[] latestVals)
 ```
 
 That’s all.
+
+
 
 ## Requirements
 
@@ -98,7 +116,6 @@ The project currently uses C# as the primary development language for ease of de
 
 ## TODO
 
-- Consider a C++ implementation in the future for better portability.
 - Currently, only the length of the LCS is computed. Backtracking to retrieve one or more actual common subsequences is not yet implemented. Given that weights are already calculated, implementing backtracking should be feasible and may be added in the future. Theoretical derivation result: Memory and time are approximately twice the current results.
 
 ## License
