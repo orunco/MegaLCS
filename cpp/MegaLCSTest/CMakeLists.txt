@@ -17,3 +17,17 @@ target_include_directories(MegaLCSTest PRIVATE
         ${PROJECT_SOURCE_DIR}/MegaLCSLib
         ${PROJECT_SOURCE_DIR}/MegaLCSLib/OpenCL
 )
+
+add_executable(MegaLCSPerf
+        OpenCL/Perf_HostLCSShared.cpp
+)
+
+target_link_libraries(MegaLCSPerf PRIVATE
+        MegaLCSLib
+        OpenCL::OpenCL
+)
+target_include_directories(MegaLCSPerf PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${PROJECT_SOURCE_DIR}/MegaLCSLib
+        ${PROJECT_SOURCE_DIR}/MegaLCSLib/OpenCL
+)
