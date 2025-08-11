@@ -7,6 +7,30 @@
 using namespace std;
 using namespace std::chrono;
 
+/*
+MegaLCS Performance Test
+========================
+
+Testing size: 65536
+Found GPU device: Tesla P40
+  Execution time: 204 ms
+  Result: 65536
+
+Testing size: 1048576
+Found GPU device: Tesla P40
+  Execution time: 9577 ms
+  Result: 1048576
+
+Testing size: 2097152
+Found GPU device: Tesla P40
+  Execution time: 36940 ms
+  Result: 2097152
+
+Testing size: 4194304
+Found GPU device: Tesla P40
+  Execution time: 144039 ms
+  Result: 4194304
+*/
 int main() {
     // 测试参数
     vector<int> sizes = {65536, 1048576, 2097152, 4194304};

@@ -85,6 +85,10 @@ pair<cl_platform_id, cl_device_id> Mega::GetFirstGpuDevice() {
         if (get<3>(device) == CL_DEVICE_TYPE_GPU) {
             platformId = get<0>(device);
             deviceId = get<1>(device);
+
+            // 打印设备名称
+            cout << "Found GPU device: " << get<2>(device) << endl;
+
             break;
         }
     }
