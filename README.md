@@ -70,6 +70,56 @@ For the DP weight matrix of the LCS algorithm, the top-left value `lefttop` of c
 **lefttop = min(left, top)**  
 where `left` is the left value (`dp[i][j-1]`) and `top` is the top value (`dp[i-1][j]`). This conclusion is rigorously proven by the non-decreasing property of the DP table and the recurrence rules, and its correctness is verified through examples.
 
+Based on our comprehensive analysis, here is the English translation of the conclusion:
+
+### Time and Space Complexity Analysis
+
+#### Effective Parallelism
+```
+P = min(
+    P_compute,     // Compute parallelism capacity
+    P_memory,      // Memory bandwidth parallelism
+    P_wavefront    // Wavefront parallelism limitation
+)
+```
+
+Where:
+- **P_compute**: Maximum concurrent threads supported by GPU compute units
+- **P_memory**: Effective parallelism limited by memory bandwidth
+- **P_wavefront**: Algorithm-inherent parallelism = min(M, N) per wavefront
+
+#### Complexity Results
+
+##### **Time Complexity:**
+
+```
+O((M+N) × max(1, (M+N)/P))
+```
+
+##### **Space Complexity:**
+
+```
+O(M+N)
+```
+
+##### Performance Scenarios
+
+1. **GPU-abundant case**: When `P ≥ (M+N)`
+   - Time complexity reduces to **O(M+N)**
+   - Achieves optimal parallel efficiency
+
+2. **GPU-limited case**: When `P < (M+N)`
+   - Time complexity becomes **O((M+N)²/P)**
+   - Performance degrades linearly with available parallelism
+
+3. **Sequential case**: When `P = 1`
+   - Time complexity degrades to **O(M×N)**
+   - Equivalent to traditional DP approach
+
+This GPU-accelerated LCS algorithm with wavefront parallelization achieves significant speedup over the classical O(M×N) approach, with actual performance bounded by the effective GPU parallelism capacity.
+
+
+
 
 
 ## Getting Started
