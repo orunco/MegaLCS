@@ -1,0 +1,211 @@
+﻿<script src="Common_Test.js"></script>
+<script src="../MegaLCSLib/Mega.Cpu.js"></script>
+<script>
+    function test_ex() {
+        console.log("Running test_ex...");
+
+        try {
+            CpuLCS_MinMax([], [], [], []);
+            console.assert(false, "Should throw");
+        } catch (e) {
+        }
+        try {
+            CpuLCS_MinMax([5], [5], [5], []);
+            console.assert(false, "Should throw");
+        } catch (e) {
+        }
+        try {
+            CpuLCS_MinMax([5], [5], [], [5]);
+            console.assert(false, "Should throw");
+        } catch (e) {
+        }
+        try {
+            CpuLCS_MinMax([5], [], [5], [5]);
+            console.assert(false, "Should throw");
+        } catch (e) {
+        }
+        try {
+            CpuLCS_MinMax([], [5], [5], [5]);
+            console.assert(false, "Should throw");
+        } catch (e) {
+        }
+
+        try {
+            CpuLCS_MinMax([5, 6], [5], [5], [5, 6]);
+            console.assert(false, "Should throw");
+        } catch (e) {
+        }
+        try {
+            CpuLCS_MinMax([5], [5, 6], [5, 6], [5]);
+            console.assert(false, "Should throw");
+        } catch (e) {
+        }
+
+        console.log("test_ex passed!");
+    }
+
+    function test_1x1() {
+        console.log("Running test_1x1...");
+
+        // 无基础权重的测试用例 1
+        {
+            let verWeights = [0];
+            let horWeights = [0];
+            CpuLCS_MinMax([5], [6], verWeights, horWeights);
+            console.assert(ArrayEqual_ForTest(verWeights, [0]), "verWeights mismatch");
+            console.assert(ArrayEqual_ForTest(horWeights, [0]), "horWeights mismatch");
+        }
+
+        {
+            let verWeights = [0];
+            let horWeights = [0];
+            CpuLCS_MinMax([5], [5], verWeights, horWeights);
+            console.assert(ArrayEqual_ForTest(verWeights, [1]), "verWeights mismatch");
+            console.assert(ArrayEqual_ForTest(horWeights, [1]), "horWeights mismatch");
+        }
+
+        // 有基础权重的测试用例 1
+        {
+            let verWeights = [10];
+            let horWeights = [10];
+            CpuLCS_MinMax([5], [6], verWeights, horWeights);
+            console.assert(ArrayEqual_ForTest(verWeights, [10]), "verWeights mismatch");
+            console.assert(ArrayEqual_ForTest(horWeights, [10]), "horWeights mismatch");
+        }
+
+        {
+            let verWeights = [10];
+            let horWeights = [10];
+            CpuLCS_MinMax([5], [5], verWeights, horWeights);
+            console.assert(ArrayEqual_ForTest(verWeights, [11]), "verWeights mismatch");
+            console.assert(ArrayEqual_ForTest(horWeights, [11]), "horWeights mismatch");
+        }
+
+        console.log("test_1x1 passed!");
+    }
+
+    function test_2x2() {
+        console.log("Running test_2x2...");
+
+        // 无基础权重的测试用例 1
+        {
+            let verWeights = [0, 0];
+            let horWeights = [0, 0];
+            CpuLCS_MinMax([5, 6], [5, 6], verWeights, horWeights);
+            console.assert(ArrayEqual_ForTest(verWeights, [1, 2]), "verWeights mismatch");
+            console.assert(ArrayEqual_ForTest(horWeights, [1, 2]), "horWeights mismatch");
+        }
+
+        {
+            let verWeights = [0, 0];
+            let horWeights = [0, 0];
+            CpuLCS_MinMax([5, 6], [7, 8], verWeights, horWeights);
+            console.assert(ArrayEqual_ForTest(verWeights, [0, 0]), "verWeights mismatch");
+            console.assert(ArrayEqual_ForTest(horWeights, [0, 0]), "horWeights mismatch");
+        }
+
+        // 有基础权重的测试用例 1
+        {
+            let verWeights = [10, 11];
+            let horWeights = [10, 12];
+            CpuLCS_MinMax([5, 6], [5, 6], verWeights, horWeights);
+            console.assert(ArrayEqual_ForTest(verWeights, [12, 12]), "verWeights mismatch");
+            console.assert(ArrayEqual_ForTest(horWeights, [11, 12]), "horWeights mismatch");
+        }
+
+        {
+            let verWeights = [10, 11];
+            let horWeights = [10, 12];
+            CpuLCS_MinMax([5, 6], [7, 8], verWeights, horWeights);
+            console.assert(ArrayEqual_ForTest(verWeights, [12, 12]), "verWeights mismatch");
+            console.assert(ArrayEqual_ForTest(horWeights, [11, 12]), "horWeights mismatch");
+        }
+
+        console.log("test_2x2 passed!");
+    }
+
+    function test_2x3() {
+        console.log("Running test_2x3...");
+
+        // 有基础权重的测试用例 1
+        {
+            let verWeights = [10, 11, 12];
+            let horWeights = [10, 11];
+            CpuLCS_MinMax([5, 6, 7], [5, 6], verWeights, horWeights);
+            console.assert(ArrayEqual_ForTest(verWeights, [11, 12, 12]), "verWeights mismatch");
+            console.assert(ArrayEqual_ForTest(horWeights, [12, 12]), "horWeights mismatch");
+        }
+
+        {
+            let verWeights = [10, 11];
+            let horWeights = [10, 11, 12];
+            CpuLCS_MinMax([5, 6], [5, 6, 7], verWeights, horWeights);
+            console.assert(ArrayEqual_ForTest(verWeights, [12, 12]), "verWeights mismatch");
+            console.assert(ArrayEqual_ForTest(horWeights, [11, 12, 12]), "horWeights mismatch");
+        }
+
+        console.log("test_2x3 passed!");
+    }
+
+    function test_all() {
+        console.log("Running test_all...");
+
+        const chars = ['a', 'b', 'c'];
+        const combinations = [];
+
+        // 生成所有可能的2字符组合（笛卡尔积），转换为char code数组
+        for (let i = 0; i < chars.length; i++) {
+            for (let j = 0; j < chars.length; j++) {
+                combinations.push([chars[i].charCodeAt(0), chars[j].charCodeAt(0)]);
+            }
+        }
+
+        // 生成81个测试用例
+        for (let i = 0; i < combinations.length; i++) {
+            for (let j = 0; j < combinations.length; j++) {
+                const testCaseIndex = i * combinations.length + j + 1;
+
+                const baseVals = [...combinations[i]];
+                const latestVals = [...combinations[j]];
+                const verWeights = new Array(baseVals.length).fill(0);
+                const horWeights = new Array(latestVals.length).fill(0);
+
+                // 保存原始数组用于经典算法
+                const baseValsOriginal = [...combinations[i]];
+                const latestValsOriginal = [...combinations[j]];
+
+                // 打印测试用例信息（可选）
+                // console.log(`Test Case ${testCaseIndex}: base=[${String.fromCharCode(baseVals[0])}, ${String.fromCharCode(baseVals[1])}], latest=[${String.fromCharCode(latestVals[0])}, ${String.fromCharCode(latestVals[1])}]`);
+
+                CpuLCS_MinMax(baseVals, latestVals, verWeights, horWeights);
+                const classic = CpuLCS_DPMatrix(baseValsOriginal, latestValsOriginal);
+
+                console.assert(ArrayEqual_ForTest(verWeights, classic.verWeights), `Test case ${testCaseIndex} verWeights mismatch`);
+                console.assert(ArrayEqual_ForTest(horWeights, classic.horWeights), `Test case ${testCaseIndex} horWeights mismatch`);
+            }
+        }
+
+        console.log("test_all passed!");
+    }
+
+    // 运行所有测试
+    function runAllTests() {
+        console.log("Starting all tests...\n");
+
+        test_ex();
+        test_1x1();
+        test_2x2();
+        test_2x3();
+        test_all();
+
+        console.log("\nAll tests passed!");
+    }
+
+    runAllTests();
+
+    // 导出以便在其他地方调用
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = {runAllTests};
+    }
+
+</script>

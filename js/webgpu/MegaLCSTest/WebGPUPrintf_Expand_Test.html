@@ -1,0 +1,176 @@
+﻿<script src="Common_Test.js"></script>
+<script src="../MegaLCSLib/WebGPUPrintf.js"></script>
+<script src="../MegaLCSLib/Mega.Kernel.Shared.js"></script>
+
+<script>
+    function testExpand_1() {
+        const template = `
+    printf("x=%dy>%d z=%d|m=%d",
+            x,y[ 0] ,
+            z[1],     mx);            
+`;
+        const expected = `
+    //printf("x=%dy>%d z=%d|m=%d",
+//            x,y[ 0] ,
+//            z[1],     mx);
+c(120,w,t);c(61,w,t);i(x,w,t);
+c(121,w,t);c(62,w,t);i(y[ 0],w,t);
+c(32,w,t);c(122,w,t);c(61,w,t);i(z[1],w,t);
+c(124,w,t);c(109,w,t);c(61,w,t);i(mx,w,t);
+
+            
+`;
+        const result = expandPrintfMacros(template);
+        console.log("Test 1 result:", result);
+        assert(result.trim() === expected.trim(), "Test 1 output mismatch");
+        console.log("Test 1 passed!");
+    }
+
+    function testExpand_11() {
+        const template = `
+    int x=1;
+    int y= 2; printf("x=%dy>%d z=%d|m=%d",
+            x,y[ 0] ,
+            z[1],     mx); float othVar=3.0             
+`;
+        const expected = `
+    int x=1;
+    int y= 2; //printf("x=%dy>%d z=%d|m=%d",
+//            x,y[ 0] ,
+//            z[1],     mx);
+c(120,w,t);c(61,w,t);i(x,w,t);
+c(121,w,t);c(62,w,t);i(y[ 0],w,t);
+c(32,w,t);c(122,w,t);c(61,w,t);i(z[1],w,t);
+c(124,w,t);c(109,w,t);c(61,w,t);i(mx,w,t);
+
+ float othVar=3.0             
+`;
+        const result = expandPrintfMacros(template);
+        console.log("Test 11 result:", result);
+        assert(result.trim() === expected.trim(), "Test 1 output mismatch");
+        console.log("Test 11 passed!");
+    }
+    
+    function testExpand_2() {
+        const template = `
+    printf("simple=%d", x);
+    // Some other code
+`;
+        const expected = `
+    //printf("simple=%d", x);
+c(115,w,t);c(105,w,t);c(109,w,t);c(112,w,t);c(108,w,t);c(101,w,t);c(61,w,t);i(x,w,t);
+
+
+    // Some other code
+`;
+        const result = expandPrintfMacros(template);
+        console.log("Test 2 result:", result);
+        assert(result.trim() === expected.trim(), "Test 2 output mismatch");
+        console.log("Test 2 passed!");
+    }
+
+
+    function testExpand_3() {
+        const template = `
+    // Before printf
+    printf("array1=%d array2=%d", x[id+2], y[index-1]);
+    // After printf
+`;
+        const expected = `
+    // Before printf
+    //printf("array1=%d array2=%d", x[id+2], y[index-1]);
+c(97,w,t);c(114,w,t);c(114,w,t);c(97,w,t);c(121,w,t);c(49,w,t);c(61,w,t);i(x[id+2],w,t);
+c(32,w,t);c(97,w,t);c(114,w,t);c(114,w,t);c(97,w,t);c(121,w,t);c(50,w,t);c(61,w,t);i(y[index-1],w,t);
+
+
+    // After printf
+`;
+        const result = expandPrintfMacros(template);
+        console.log("Test 3 result:", result);
+        assert(result.trim() === expected.trim(), "Test 3 output mismatch");
+        console.log("Test 3 passed!");
+    }
+
+    function testExpand_4() {
+        const template = `// No printf here`;
+        const expected = `// No printf here`;
+        const result = expandPrintfMacros(template);
+        console.log("Test 4 result:", result);
+        assert(result === expected, "Test 4 output mismatch");
+        console.log("Test 4 passed!");
+    }
+
+    function testExpand_5() {
+        const template = `
+    printf("multi-line\\
+    format=%d", value);
+`;
+        const expected = `
+    //printf("multi-line\\
+//    format=%d", value);
+c(109,w,t);c(117,w,t);c(108,w,t);c(116,w,t);c(105,w,t);c(45,w,t);c(108,w,t);c(105,w,t);c(110,w,t);c(101,w,t);c(102,w,t);c(111,w,t);c(114,w,t);c(109,w,t);c(97,w,t);c(116,w,t);c(61,w,t);i(value,w,t);
+
+
+`;
+        const result = expandPrintfMacros(template);
+        console.log("Test 5 result:", result);
+        assert(result.trim() === expected.trim(), "Test 5 output mismatch");
+        console.log("Test 5 passed!");
+    }
+
+    function testExpand_6() {
+        const template = `printf("escaped: \n newline \t%d", var);`;
+        const expected = `//printf("escaped: 
+// newline \t%d", var);
+c(101,w,t);c(115,w,t);c(99,w,t);c(97,w,t);c(112,w,t);c(101,w,t);c(100,w,t);c(58,w,t);c(32,w,t);c(10,w,t);c(32,w,t);c(110,w,t);c(101,w,t);c(119,w,t);c(108,w,t);c(105,w,t);c(110,w,t);c(101,w,t);c(32,w,t);c(9,w,t);i(var,w,t);
+
+`;
+        const result = expandPrintfMacros(template);
+        console.log("Test 6 result:", result);
+        assert(result.trim() === expected.trim(), "Test 6 output mismatch");
+        console.log("Test 6 passed!");
+        
+    }
+
+    function testExpand_7() {
+        const template = `printf("{a%d %da ..}", var,var);`;
+        const expected = `//printf("{a%d %da ..}", var,var);
+c(123,w,t);c(97,w,t);i(var,w,t);
+c(32,w,t);i(var,w,t);
+c(97,w,t);c(32,w,t);c(46,w,t);c(46,w,t);c(125,w,t);
+`;
+        const result = expandPrintfMacros(template);
+        console.log("Test 7 result:", result);
+        assert(result.trim() === expected.trim(), "Test 6 output mismatch");
+        console.log("Test 7 passed!");
+
+    }
+    
+    
+    // 真实生产环境解析一下，只要不抛出异常就OK
+    function test_kernel_template() {
+        const result = expandPrintfMacros(KernelLCS_MinMax_WGSL_Template);
+        console.log("Test kernel_template result:", result);
+    }
+    
+    function runAllTests() {
+        try {
+            testExpand_1();
+            testExpand_11();
+            testExpand_2();
+            testExpand_3();
+            testExpand_4();
+            testExpand_5();
+            testExpand_6();
+            testExpand_7();
+            test_kernel_template();
+            console.log("All expandPrintfMacros tests passed!");
+        } catch (e) {
+            console.error("Test failed:", e.message);
+        }
+    }
+
+    window.onload = runAllTests;
+</script>
+</body>
+</html>

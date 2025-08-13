@@ -1,0 +1,20 @@
+﻿<script src="Common_Test.js"></script>
+<script src="../MegaLCSLib/WebGPUPrintf.js"></script>
+<script src="../MegaLCSLib/Mega.Kernel.Shared.js"></script>
+<script src="Mega.Kernel.Shared_Demo.js"></script>
+<script>
+
+    async function test_one() {
+        {
+            let verWeights = [0];
+            let horWeights = [0];
+            await KernelLCS_MinMax_ForTest([5], [5], verWeights, horWeights);
+            console.assert(ArrayEqual_ForTest(verWeights, [1]), "verWeights mismatch");
+            console.assert(ArrayEqual_ForTest(horWeights, [1]), "horWeights mismatch");
+        }
+
+    }
+
+    test_one()
+    
+</script>

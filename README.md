@@ -1,6 +1,6 @@
 # MegaLCS
 
-**An OpenCL LCS(Longest Common Subsequence) parallel MinMax algorithm (~150 lines) supporting MILLION elements on a single GPU, ULTRA-FAST performance, and controllable time and memory usage.**
+**A CUDA-like LCS(Longest Common Subsequence) parallel MinMax algorithm(~150 lines) that supports MILLION elements on a single GPU, ULTRA-FAST performance and controllable time and memory usage.**
 
 Keywords: Longest Common Subsequence, LCS, CUDA, OpenCL, Parallel Computing, MinMax
 
@@ -124,7 +124,33 @@ This GPU-accelerated LCS algorithm with wavefront parallelization achieves signi
 
 ## Getting Started
 
+### js(webgpu)
+
+- Chrome 113
+- native js 
+- pure web client impl 
+- A powerful  OpenCL-compatible(GPU or Powerful CPU) device
+
+```bash
+git clone https://github.com/orunco/MegaLCS.git
+cd js\webgpu\MegaLCSTest
+run test.html
+```
+
+Alternatively, you can import it into your own project and directly use the function interface:
+
+```js
+async function MegaLCSLen(baseVals, latestVals)
+```
+
+
 ### cpp
+
+- c++ 17
+- cmake && vcpkg
+- opencl lib && gtest lib
+- A powerful  OpenCL-compatible(GPU or Powerful CPU) device
+
 ```bash
 git clone https://github.com/orunco/MegaLCS.git
 cd cpp\MegaLCSTest
@@ -137,8 +163,13 @@ Alternatively, you can import it into your own project and directly use the func
 Mega::MegaLCSLen(const vector<int>& baseVals, const vector<int>& latestVals)
 ```
 
-
 ### csharp
+
+The project currently uses C# as the primary development language for ease of development and debugging.
+
+- .NET 8+
+- Silk.NET.OpenCL 2.22.0 (MIT LICENSE)
+- A powerful  OpenCL-compatible(GPU or Powerful CPU) device
 
 ```bash
 git clone https://github.com/orunco/MegaLCS.git
@@ -155,14 +186,6 @@ Mega.MegaLCSLen(int[] baseVals, int[] latestVals)
 That’s all.
 
 
-
-## Requirements
-
-The project currently uses C# as the primary development language for ease of development and debugging.
-
-- .NET 8+
-- Silk.NET.OpenCL 2.22.0 (MIT LICENSE)
-- A powerful  OpenCL-compatible(GPU or Powerful CPU) device
 
 ## TODO
 

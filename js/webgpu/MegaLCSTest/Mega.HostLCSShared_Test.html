@@ -1,0 +1,191 @@
+﻿<script src="Common_Test.js"></script>
+<script src="../MegaLCSLib/Mega.Cpu.js"></script>
+<script src="../MegaLCSLib/WebGPUPrintf.js"></script>
+<script src="../MegaLCSLib/Mega.Kernel.Shared.js"></script>
+<script src="../MegaLCSLib/Mega.Host.js"></script>
+<script>
+
+    async function runTest() {
+        await test_RegularArray2x2_step2();
+        await test_classic();
+        await test_RegularArray1x1();
+        await test_RegularArray2x2_step1();
+        await test_Other();
+        await test_x();
+    }
+
+    async function test_classic() {
+        // STEP = 1 原始经典值
+        {
+            let bases = ['A'.charCodeAt(0), 'B'.charCodeAt(0), 'C'.charCodeAt(0), 'B'.charCodeAt(0), 'D'.charCodeAt(0), 'A'.charCodeAt(0), 'B'.charCodeAt(0)];
+            let latests = ['B'.charCodeAt(0), 'D'.charCodeAt(0), 'C'.charCodeAt(0), 'A'.charCodeAt(0), 'B'.charCodeAt(0), 'C'.charCodeAt(0)];
+            let inputVerW = new Array(bases.length).fill(0);
+            let inputHorW = new Array(latests.length).fill(0);
+            let expect = CpuLCS_DPMatrix(bases, latests);
+            await test_HostLCS_Shared(bases, latests,
+                inputVerW, inputHorW,
+                expect.verWeights, expect.horWeights, 1, false);
+        }
+
+        // STEP = 2
+        {
+            let bases = ['A'.charCodeAt(0), 'B'.charCodeAt(0), 'C'.charCodeAt(0), 'B'.charCodeAt(0), 'D'.charCodeAt(0), 'A'.charCodeAt(0)];
+            let latests = ['B'.charCodeAt(0), 'D'.charCodeAt(0), 'C'.charCodeAt(0), 'A'.charCodeAt(0), 'B'.charCodeAt(0), 'C'.charCodeAt(0)];
+            let inputVerW = new Array(bases.length).fill(0);
+            let inputHorW = new Array(latests.length).fill(0);
+            let expect = CpuLCS_DPMatrix(bases, latests);
+            await test_HostLCS_Shared(bases, latests,
+                inputVerW, inputHorW,
+                expect.verWeights, expect.horWeights, 2, false);
+        }
+
+        // STEP = 3
+        {
+            let bases = ['A'.charCodeAt(0), 'B'.charCodeAt(0), 'C'.charCodeAt(0), 'B'.charCodeAt(0), 'D'.charCodeAt(0), 'A'.charCodeAt(0)];
+            let latests = ['B'.charCodeAt(0), 'D'.charCodeAt(0), 'C'.charCodeAt(0), 'A'.charCodeAt(0), 'B'.charCodeAt(0), 'C'.charCodeAt(0)];
+            let inputVerW = new Array(bases.length).fill(0);
+            let inputHorW = new Array(latests.length).fill(0);
+            let expect = CpuLCS_DPMatrix(bases, latests);
+            await test_HostLCS_Shared(bases, latests,
+                inputVerW, inputHorW,
+                expect.verWeights, expect.horWeights, 3, false);
+        }
+
+        // STEP = 6
+        {
+            let bases = ['A'.charCodeAt(0), 'B'.charCodeAt(0), 'C'.charCodeAt(0), 'B'.charCodeAt(0), 'D'.charCodeAt(0), 'A'.charCodeAt(0)];
+            let latests = ['B'.charCodeAt(0), 'D'.charCodeAt(0), 'C'.charCodeAt(0), 'A'.charCodeAt(0), 'B'.charCodeAt(0), 'C'.charCodeAt(0)];
+            let inputVerW = new Array(bases.length).fill(0);
+            let inputHorW = new Array(latests.length).fill(0);
+            let expect = CpuLCS_DPMatrix(bases, latests);
+            await test_HostLCS_Shared(bases, latests,
+                inputVerW, inputHorW,
+                expect.verWeights, expect.horWeights, 6, false);
+        }
+    }
+
+    async function test_RegularArray1x1() {
+        // 无基础权重的测试用例
+        await test_HostLCS_Shared([5], [5], [0], [0],
+            [1], [1], 1);
+        await test_HostLCS_Shared([5], [6], [0], [0],
+            [0], [0], 1);
+
+        // 有基础权重的测试用例
+        await test_HostLCS_Shared([5], [5], [10], [10],
+            [11], [11], 1);
+        await test_HostLCS_Shared([5], [6], [10], [10],
+            [10], [10], 1);
+    }
+
+    async function test_RegularArray2x2_step1() {
+        // 无基础权重的测试用例
+        await test_HostLCS_Shared([5, 6], [5, 6], [0, 0], [0, 0],
+            [1, 2], [1, 2], 1);
+        await test_HostLCS_Shared([5, 6], [7, 8], [0, 0], [0, 0],
+            [0, 0], [0, 0], 1);
+
+        // 有基础权重的测试用例
+        await test_HostLCS_Shared([5, 6], [5, 6], [10, 20], [30, 40],
+            [40, 21], [20, 21], 1);
+        await test_HostLCS_Shared([5, 6], [7, 8], [10, 20], [30, 40],
+            [40, 40], [30, 40], 1);
+    }
+
+    async function test_RegularArray2x2_step2() {
+        // 无基础权重的测试用例
+        await test_HostLCS_Shared(
+            [1, 2], [1, 2], 
+            [0, 0], [0, 0],
+            [1, 2], [1, 2], 
+            2); 
+    }
+    
+    async function test_Other() {
+        // 这个测试用例的基础权重值虽然很奇葩，但是可以很清晰的解释核函数内部发生的流程，因为权重不符合实际，所以结果和正确的权重也有差异
+        await test_HostLCS_Shared([5, 6, 5], [5, 6]
+            , [30, 40, 50], [10, 20]
+            , [20, 21, 41], [41, 41], 1, false);
+
+        await test_HostLCS_Shared([5, 6], [5, 6]
+            , [30, 40], [10, 20]
+            , [20, 21], [40, 21], 1, false);
+        // 下面这个测试是可以通过的，结果是正确的
+        await test_HostLCS_Shared([5, 6], [5, 6]
+            , [11, 12], [10, 11]
+            , [11, 12], [12, 12], 1, false);
+
+        await test_HostLCS_Shared([5, 6, 7, 8], [5, 6, 7, 8]
+            , [11, 12, 13, 14], [10, 11, 12, 13]
+            , [13, 13, 13, 14], [14, 14, 14, 14], 2, false);
+    }
+
+    async function test_x(){ 
+        var arrayMax = 65536;
+        var inputArray = new Array(arrayMax).fill(0);
+        var weightArray = new Array(arrayMax).fill(0);
+        var expectWeightArray = new Array(arrayMax).fill(0).map((_, i) => i + 1);
+        
+        await test_HostLCS_Shared(inputArray, inputArray,
+            weightArray, weightArray,
+            expectWeightArray, expectWeightArray,
+            256, false);
+    }
+    
+    async function test_HostLCS_Shared(
+        baseVals,
+        latestVals,
+        verWeights,
+        horWeights,
+        versOutExpect,
+        horsOutExpect,
+        step,
+        isDebug = false) {
+
+        if (isDebug) {
+            console.log(`Run on device : WebGPU`);
+        }
+
+        const startTime = performance.now(); // 开始计时
+
+        // 由于这个函数会直接修改权重数组，而测试是多设备反复的
+        const versOut = [...verWeights];
+        const horsOut = [...horWeights];
+
+        try {
+            await HostLCS_WaveFront(
+                baseVals,
+                latestVals,
+                versOut,
+                horsOut,
+                true,
+                step,
+                isDebug
+            );
+
+            const endTime = performance.now(); // 结束计时
+            console.log(`Execution time: ${endTime - startTime} ms, Using device: [WebGPU]`);
+            console.log(`Last verWeight=${versOut[versOut.length - 1]}, Last horWeight=${horsOut[horsOut.length - 1]}`);
+
+            // 直接验证正确性
+            if (JSON.stringify(versOut) !== JSON.stringify(versOutExpect)) {
+                throw new Error(`verWeights do not match expected values.\nExpected: ${JSON.stringify(versOutExpect)}\nActual: ${JSON.stringify(versOut)}`);
+            }
+            if (JSON.stringify(horsOut) !== JSON.stringify(horsOutExpect)) {
+                throw new Error(`horWeights do not match expected values.\nExpected: ${JSON.stringify(horsOutExpect)}\nActual: ${JSON.stringify(horsOut)}`);
+            }
+
+            console.log("Test passed.");
+        } catch (error) {
+            console.error("Test failed:", error.message);
+            throw error;
+        }
+    }
+
+    // Run all tests
+    runTest().catch(err => {
+        console.error("Test suite failed:", err);
+    });
+    
+    
+</script>

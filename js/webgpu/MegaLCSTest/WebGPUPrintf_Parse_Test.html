@@ -1,0 +1,170 @@
+﻿<script src="Common_Test.js"></script>
+<script src="../MegaLCSLib/WebGPUPrintf.js"></script>
+<script src="../MegaLCSLib/Mega.Kernel.Shared.js"></script>
+
+<script>
+    function test_1() {
+        const template = `
+    printf("x=%dy>%d z=%d|m=%d",
+            x,y[ 0] ,
+            z[1],     mx);            
+`;
+        const result = parsePrintfMacro(template);
+        console.log("Test 1 result:", result);
+
+        assert(result.length === 1, "Should find exactly one printf");
+        assert(result[0].startPos === 5, "Start position should be 5");
+        assert(result[0].endPos === 82, "End position should be 82");
+        assert(result[0].parts.length === 4, "Should have 4 format parts");
+
+        assert(result[0].parts[0][0] === "x=", "First format part should be 'x='");
+        assert(result[0].parts[0][1] === "x", "First variable should be 'x'");
+        assert(result[0].parts[1][0] === "y>", "Second format part should be 'y>'");
+        assert(result[0].parts[1][1] === "y[ 0]", "Second variable should be 'y[ 0]'");
+        assert(result[0].parts[2][0] === " z=", "Third format part should be ' z='");
+        assert(result[0].parts[2][1] === "z[1]", "Third variable should be 'z[1]'");
+        assert(result[0].parts[3][0] === "|m=", "Fourth format part should be '|m='");
+        assert(result[0].parts[3][1] === "mx", "Fourth variable should be 'mx'");
+
+        console.log("Test 1 passed!");
+    }
+
+    function test_2() {
+        const template = `
+    printf("outerW=%d block =%d> thread=g%d,%d| totalThread=%d (in device)",
+            outerW,blockIdx,
+            threadGIdx,threadIdx,totalThread);
+            
+    printf("                   thread=g%d,%d| INIT    gBases={%d %d ..} gLatests={%d %d ..} gVers={%d %d ..} gHors={%d %d ..} ",
+            threadGIdx, threadIdx
+            , gBases[0], gBases[1]
+            , gLatests[0], gLatests[1]
+            , gVerWeights[0], gVerWeights[1]
+            , gHorWeights[0], gHorWeights[1]);            
+`;
+        const result = parsePrintfMacro(template);
+        console.log("Test 2 result:", result);
+
+        assert(result.length === 2, "Should find exactly two printf statements");
+
+        // 检查第一个printf
+        assert(result[0].parts.length === 5, "First printf should have 5 format parts");
+        assert(result[0].parts[0][0] === "outerW=", "First format part should be 'outerW='");
+        assert(result[0].parts[0][1] === "outerW", "First variable should be 'outerW'");
+        assert(result[0].parts[1][0] === " block =", "Second format part should be ' block ='");
+        assert(result[0].parts[1][1] === "blockIdx", "Second variable should be 'blockIdx'");
+        assert(result[0].parts[2][0] === "> thread=g", "Third format part should be '> thread=g'");
+        assert(result[0].parts[2][1] === "threadGIdx", "Third variable should be 'threadGIdx'");
+        assert(result[0].parts[3][0] === ",", "Fourth format part should be ','");
+        assert(result[0].parts[3][1] === "threadIdx", "Fourth variable should be 'threadIdx'");
+        assert(result[0].parts[4][0] === "| totalThread=", "Fifth format part should be '| totalThread='");
+        assert(result[0].parts[4][1] === "totalThread", "Fifth variable should be 'totalThread'");
+
+        // 检查第二个printf
+        assert(result[1].parts.length === 10, "Second printf should have 10 format parts");
+        assert(result[1].parts[0][0] === "                   thread=g", "First format part should be '                   thread=g'");
+        assert(result[1].parts[0][1] === "threadGIdx", "First variable should be 'threadGIdx'");
+        assert(result[1].parts[1][0] === ",", "Second format part should be ','");
+        assert(result[1].parts[1][1] === "threadIdx", "Second variable should be 'threadIdx'");
+        assert(result[1].parts[2][0] === "| INIT    gBases={", "Third format part should be '| INIT    gBases={'");
+        assert(result[1].parts[2][1] === "gBases[0]", "Third variable should be 'gBases[0]'");
+        assert(result[1].parts[3][0] === " ", "Fourth format part should be ' '");
+        assert(result[1].parts[3][1] === "gBases[1]", "Fourth variable should be 'gBases[1]'");
+        assert(result[1].parts[4][0] === " ..} gLatests={", "Fifth format part should be ' ..} gLatests={'");
+        assert(result[1].parts[4][1] === "gLatests[0]", "Fifth variable should be 'gLatests[0]'");
+        assert(result[1].parts[5][0] === " ", "Sixth format part should be ' '");
+        assert(result[1].parts[5][1] === "gLatests[1]", "Sixth variable should be 'gLatests[1]'");
+        assert(result[1].parts[6][0] === " ..} gVers={", "Seventh format part should be ' ..} gVers={'");
+        assert(result[1].parts[6][1] === "gVerWeights[0]", "Seventh variable should be 'gVerWeights[0]'");
+        assert(result[1].parts[7][0] === " ", "Eighth format part should be ' '");
+        assert(result[1].parts[7][1] === "gVerWeights[1]", "Eighth variable should be 'gVerWeights[1]'");
+        assert(result[1].parts[8][0] === " ..} gHors={", "Ninth format part should be ' ..} gHors={'");
+        assert(result[1].parts[8][1] === "gHorWeights[0]", "Ninth variable should be 'gHorWeights[0]'");
+        assert(result[1].parts[9][0] === " ", "Tenth format part should be ' '");
+        assert(result[1].parts[9][1] === "gHorWeights[1]", "Tenth variable should be 'gHorWeights[1]'");
+
+        console.log("Test 2 passed!");
+    }
+
+
+    function test_3() {
+        const template = `printf("simple=%d", x);`;
+        const result = parsePrintfMacro(template);
+        console.log("Test 3 result:", result);
+
+        assert(result.length === 1, "Should find exactly one printf");
+        assert(result[0].startPos === 0, "Start position should be 0");
+        assert(result[0].endPos === 23, "End position should be 23"); // 修正：应该是23而不是21
+        assert(result[0].parts.length === 1, "Should have 1 format part");
+        assert(result[0].parts[0][0] === "simple=", "Format part should be 'simple='");
+        assert(result[0].parts[0][1] === "x", "Variable should be 'x'");
+
+        console.log("Test 3 passed!");
+    }
+    
+    function test_4() {
+        const template = `// no printf here`;
+        const result = parsePrintfMacro(template);
+        console.log("Test 4 result:", result);
+
+        assert(result.length === 0, "Should find no printf statements");
+
+        console.log("Test 4 passed!");
+    }
+
+    function test_5() {
+        const template = `printf("array1=%d array2=%d calc=%d", x[id+2], y[index-1], z[base*2+1]);`;
+        const result = parsePrintfMacro(template);
+        console.log("Test 5 result:", result);
+
+        assert(result.length === 1, "Should find exactly one printf");
+        assert(result[0].startPos === 0, "Start position should be 0");
+        assert(result[0].endPos === 72, "End position should be 72"); // 修正为正确长度
+        assert(result[0].parts.length === 3, "Should have 3 format parts");
+
+        assert(result[0].parts[0][0] === "array1=", "First format part should be 'array1='");
+        assert(result[0].parts[0][1] === "x[id+2]", "First variable should be 'x[id+2]'");
+        assert(result[0].parts[1][0] === " array2=", "Second format part should be ' array2='");
+        assert(result[0].parts[1][1] === "y[index-1]", "Second variable should be 'y[index-1]'");
+        assert(result[0].parts[2][0] === " calc=", "Third format part should be ' calc='");
+        assert(result[0].parts[2][1] === "z[base*2+1]", "Third variable should be 'z[base*2+1]'");
+
+        console.log("Test 5 passed!");
+    }
+
+    function test_6() {
+        const template = `printf("escaped: \n newline \t%d", var);`;
+        const result = parsePrintfMacro(template);
+        console.log("Test 6 result:", result);
+        
+        assert(result.length === 1, "Should find exactly one printf");
+        assert(result[0].parts.length === 1, "Should have 1 format part");
+        assert(result[0].parts[0][0] === "escaped: \n newline \t",
+            "Format part should handle escaped characters");
+        assert(result[0].parts[0][1] === "var", "Variable should be 'var'");
+        console.log("Test 6 passed!");
+    }
+     
+    // 真实生产环境解析一下，只要不抛出异常就OK
+    function test_kernel_template() {
+        const result = parsePrintfMacro(KernelLCS_MinMax_WGSL_Template);
+        console.log("Test kernel_template result:", result);
+    }
+    
+    function runAllTests() {
+        try {
+            test_1();
+            test_2();
+            test_3();
+            test_4();
+            test_5();
+            test_6(); 
+            test_kernel_template();
+            console.log("All tests passed!");
+        } catch (e) {
+            console.error("Test failed:", e.message);
+        }
+    }
+
+    window.onload = runAllTests;
+</script>

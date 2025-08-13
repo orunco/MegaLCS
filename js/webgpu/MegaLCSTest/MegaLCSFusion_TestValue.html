@@ -1,0 +1,83 @@
+﻿<script src="Common_Test.js"></script>
+<script src="../MegaLCSLib/Mega.Cpu.js"></script>
+<script src="../MegaLCSLib/WebGPUPrintf.js"></script>
+<script src="../MegaLCSLib/Mega.Kernel.Shared.js"></script>
+<script src="../MegaLCSLib/Mega.Host.js"></script>
+<script src="../MegaLCSLib/Mega.Fusion.js"></script>
+
+<script>
+
+    async function runTest() {
+        await TestCase1_EqualArrays();
+        await TestCase2_DifferentArrays();
+        await TestCase3_RandomWithValidation();
+    }
+
+    // STEP = 2, base = latest = [1, 2, 3] 都相等
+    async function TestCase1_EqualArrays() {
+        const bases = [1, 2, 3];
+        const latest = [1, 2, 3];
+        // 解构
+        const [processByCpu, verWeights, horWeights] =
+            await MegaLCS_Fusion(true, bases, latest, 2);
+
+        console.assert(!processByCpu, "Should not process by CPU");
+        console.assert(verWeights[verWeights.length - 1] === 3, "verWeights last value mismatch");
+        console.assert(horWeights[horWeights.length - 1] === 3, "horWeights last value mismatch");
+    }
+
+    // STEP = 2, base = [1,2,3], latest = [5,6,7] 都不相等
+    async function TestCase2_DifferentArrays() {
+        const bases = [1, 2, 3];
+        const latest = [5, 6, 7];
+        // 解构
+        const [processByCpu, verWeights, horWeights] =
+            await MegaLCS_Fusion(true, bases, latest, 2);
+
+        console.assert(!processByCpu, "Should not process by CPU");
+        console.assert(verWeights[verWeights.length - 1] === 0, "verWeights last value mismatch");
+        console.assert(horWeights[horWeights.length - 1] === 0, "horWeights last value mismatch");
+    }
+
+    // 原生伪随机数生成器（线性同余生成器）
+    function createSeededRandom(seed) {
+        let state = seed;
+        return function () {
+            // 线性同余生成器参数
+            state = (state * 1664525 + 1013904223) % Math.pow(2, 32);
+            return state / Math.pow(2, 32);
+        };
+    }
+
+    // STEP = 2, 随机数组 + 验证
+    async function TestCase3_RandomWithValidation() {
+        for (let j = 0; j < 10; j++) {
+            const rand = createSeededRandom(j); // 假设你用了 seedrandom 库做伪随机
+            const MAX = 512;
+
+            const baseLen = Math.floor(rand() * (MAX - 4)) + 4;
+            const baseVals = Array.from({length: baseLen}, () => Math.floor(rand() * (MAX - 1)) + 1);
+
+            const latestLen = Math.floor(rand() * (MAX - 4)) + 4;
+            const latestVals = Array.from({length: latestLen}, () => Math.floor(rand() * (MAX - 1)) + 1);
+
+            // 使用经典 LCS 验证
+            const classicResult = CpuLCS_DPMatrix(baseVals, latestVals);
+            console.log(`Classic: ${baseLen} vs ${latestLen} => LCS Result: ${classicResult.horWeights[classicResult.horWeights.length - 1]}`);
+
+            // 测试 Fusion 版本
+            // 解构
+            const [processByCpu, verWeights, horWeights] =
+                await MegaLCS_Fusion(true, baseVals, latestVals, 2);
+
+            console.assert(!processByCpu, "Should not process by CPU");
+            console.assert(ArrayEqual_ForTest(verWeights, classicResult.verWeights), "verWeights mismatch");
+            console.assert(ArrayEqual_ForTest(horWeights, classicResult.horWeights), "horWeights mismatch");
+        }
+    }
+
+    // Run all tests
+    runTest().catch(err => {
+        console.error("Test suite failed:", err);
+    });
+</script>
