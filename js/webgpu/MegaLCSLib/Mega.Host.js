@@ -36,6 +36,18 @@ async function HostLCS_WaveFront(
         throw new Error("No appropriate GPUAdapter found");
     }
 
+    const canvas = document.createElement("canvas");
+    const gl = canvas.getContext("webgl");
+    if (gl) {
+        const debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
+        if (debugInfo) {
+            const vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
+            const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+            console.log("GPU Vendor:", vendor);
+            console.log("GPU Renderer:", renderer);
+        }
+    }
+    
     const device = await adapter.requestDevice();
 
     // Create kernel code

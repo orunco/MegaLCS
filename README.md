@@ -126,7 +126,7 @@ This GPU-accelerated LCS algorithm with wavefront parallelization achieves signi
 
 ### js(webgpu)
 
-- Chrome 113
+- Chrome 113 https://github.com/gpuweb/gpuweb/wiki/Implementation-Status#implementation-status 
 - native js 
 - pure web client impl 
 - A powerful  OpenCL-compatible(GPU or Powerful CPU) device
